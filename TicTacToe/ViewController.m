@@ -23,7 +23,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
 @property CGPoint point;
 @property BOOL turn;
-
 @property (weak, nonatomic) IBOutlet UILabel *clickedLabel;
 
 @end
@@ -41,20 +40,28 @@
 {
     if (CGRectContainsPoint(_myLabelOne.frame, pointNew)) {
         self.clickedLabel = self.myLabelOne;
+
     } else if (CGRectContainsPoint(self.myLabelTwo.frame, pointNew)) {
         self.clickedLabel = self.myLabelTwo;
+
     } else if (CGRectContainsPoint(self.myLabelThree.frame, pointNew)) {
         self.clickedLabel = self.myLabelThree;
+
     } else if (CGRectContainsPoint(self.myLabelFour.frame, pointNew)) {
         self.clickedLabel = self.myLabelFour;
+
     }else if (CGRectContainsPoint(self.myLabelFive.frame, pointNew)) {
         self.clickedLabel = self.myLabelFive;
+
     }else if (CGRectContainsPoint(self.myLabelSix.frame, pointNew)) {
         self.clickedLabel = self.myLabelSix;
+
     }else if (CGRectContainsPoint(self.myLabelSeven.frame, pointNew)) {
         self.clickedLabel = self.myLabelSeven;
+
     }else if (CGRectContainsPoint(self.myLabelEight.frame, pointNew)) {
         self.clickedLabel = self.myLabelEight;
+
     }else if (CGRectContainsPoint(self.myLabelNine.frame, pointNew)) {
         self.clickedLabel = self.myLabelNine;
     }
@@ -65,13 +72,15 @@
     [alert show];
 }
 
--(void)yIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Y won" message:@"Y won" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
+-(void)oIsWinner {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"O won" message:@"O won" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
     [alert show];
 }
 
 -(IBAction)onLabelTapped:(UITapGestureRecognizer *) tap
 {
+
+    NSString *string = @" ";
 
     self.point = [tap locationInView:self.view];
 
@@ -95,23 +104,52 @@
             }
 
 
+
 //Checking if User Won
 
-    if ([self.myLabelOne  isEqual: @"X"] && [self.myLabelTwo  isEqual: @"X"] && [self.myLabelThree  isEqual: @"X"]) {
-
+    if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelTwo.text isEqual: @"X"] && [self.myLabelThree.text  isEqual: @"X"]) {
         [self xIsWinner];
-    }    else if ([self.myLabelOne  isEqual: @"X"] && [self.myLabelTwo  isEqual: @"X"] && [self.myLabelThree  isEqual: @"X"]) {
-
+    } else if ([self.myLabelFour.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelSix.text  isEqual: @"X"]) {
         [self xIsWinner];
-
-    }  else if ([self.myLabelOne  isEqual: @"X"] && [self.myLabelTwo  isEqual: @"X"] && [self.myLabelThree  isEqual: @"X"]) {
-
+    } else if ([self.myLabelSeven.text isEqual: @"X"] && [self.myLabelEight.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFour.text isEqual: @"X"] && [self.myLabelSeven.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelTwo.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelEight.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    }else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelSix.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelSeven.text  isEqual: @"X"]) {
         [self xIsWinner];
     }
 
+    // if O scores
 
+    else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelTwo.text isEqual: @"O"] && [self.myLabelThree.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelFour.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSix.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelSeven.text isEqual: @"O"] && [self.myLabelEight.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFour.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelTwo.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelEight.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    }else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelSix.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    }
+    else if (self.myLabelOne.text != string && self.myLabelTwo.text != string && self.myLabelThree.text != string && self.myLabelFour.text != string && self.myLabelFive.text != string && self.myLabelSix.text != string && self.myLabelSeven.text != string && self.myLabelEight.text != string && self.myLabelNine.text != string)
+    {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"cat" message:nil delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil];
+        [alert show];
+    }
 //    NSLog(@"%f %f", point.x, point.y);
-
 
 
 
