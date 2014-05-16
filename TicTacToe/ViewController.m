@@ -198,9 +198,6 @@
 - (IBAction)onHelpButtonPressed:(UIButton *)sender
 {
     [self performSegueWithIdentifier:@"toHelpViewController" sender:self ];
-
-//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"How To Play" message:@"You don't know how to play tictactoe?" delegate:nil cancelButtonTitle:@"Yes" otherButtonTitles:@"No", nil];
-//    [alert show];
 }
 
 // Resets the game when pressed. See reset helper method.
@@ -223,9 +220,9 @@
 }
 
 -(void)catGame {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Cat!" message:@"It's a Draw" delegate:(self) cancelButtonTitle:@"Play Again" otherButtonTitles:nil];
-    [alert show];
+    [self performSegueWithIdentifier:@"catSegue" sender:self];
     [self.timer invalidate];
+    [self reset];
 }
 
 
