@@ -21,19 +21,21 @@
 @property (weak, nonatomic) IBOutlet UILabel *myLabelNine;
 
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
-@property CGPoint point;
-@property CGAffineTransform transform;
+
+@property CGPoint pointOfPanSaved;
+@property CGPoint pointofLabelOrigin;
+@property CGAffineTransform originPoint;
+
 @property BOOL turn;
+
 @property (weak, nonatomic) IBOutlet UILabel *clickedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *gameRules;
-@property BOOL helpButton;
 
+@property BOOL helpButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *timerLabel;
 @property (strong, nonatomic) NSTimer *timer;
 @property int currentSeconds;
-
-
 
 @end
 
@@ -43,7 +45,12 @@
 {
     [super viewDidLoad];
     self.turn = NO;
-    self.transform = self.whichPlayerLabel.transform;
+
+    //Saves the center for the label
+    self.originPoint = self.whichPlayerLabel.transform;
+
+    self.pointofLabelOrigin = self.whichPlayerLabel.frame.origin;
+
     self.helpButton = YES;
     [self createTimer];
     self.currentSeconds = 15;
@@ -81,33 +88,44 @@
 }
 
 -(void)xIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"X won" message:@"X won" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"X won" message:@"X won" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
     [alert show];
     [self.timer invalidate];
 }
 
 -(void)oIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"O won" message:@"O won" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"O won" message:@"O won" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
     [alert show];
     [self.timer invalidate];
 }
 
 -(IBAction)onLabelPan:(UIPanGestureRecognizer *) pan
 {
-    self.point = [pan translationInView:self.view];
-    self.whichPlayerLabel.transform = CGAffineTransformMakeTranslation(_point.x, _point.y);
-    _point.x += (self.whichPlayerLabel.center.x);
-    _point.y += (self.whichPlayerLabel.center.y);
+    //Setting @Property for pan point
+    self.pointOfPanSaved = [pan translationInView:self.view];
+    
+    self.whichPlayerLabel.transform = CGAffineTransformMakeTranslation(_pointOfPanSaved.x, _pointOfPanSaved.y);
+
+    //Offsetting for center of label with finger point
+    _pointOfPanSaved.x += (self.whichPlayerLabel.center.x);
+    _pointOfPanSaved.y += (self.whichPlayerLabel.center.y);
+
+    //Finding area where 
     if (pan.state == UIGestureRecognizerStateEnded) {
-        [self findLabelUsingPoint:self.point];
+
+        [self findLabelUsingPoint:self.pointOfPanSaved];
+
+        //Setting the Label back to the origin animatedly.
         [UIView animateWithDuration:1.5 animations:^{
-            self.whichPlayerLabel.transform = self.transform;
+            self.whichPlayerLabel.transform = self.originPoint;
             }];
+
         [self.timer invalidate];
         self.currentSeconds = 16;
         [self createTimer];
 
-    }
+    }//end if
+
     // if BOOL = YES for Turn, set in viewDidLoad
     if (self.turn) {
         if ([self.clickedLabel.text isEqual: @" "]) {
@@ -116,8 +134,6 @@
             self.turn = !self.turn;
             self.whichPlayerLabel.text = @"X";
             }
-
-//CGRectContainsPoint(self.clickedLabel.frame, self.point) && 
 
 // Else other turn
     } else {
@@ -199,16 +215,18 @@
         self.helpButton = !self.helpButton;
     }
 }
-- (IBAction)resumeGame:(id)sender {
+- (IBAction)restartButton:(id)sender {
     [self reset];
-    [self.timer invalidate];
-    self.currentSeconds = 16;
-    [self createTimer];
 }
-
 
 -(void)reset
 {
+
+    self.pointOfPanSaved = self.pointofLabelOrigin;
+
+    [self.timer invalidate];
+    self.currentSeconds = 16;
+    [self createTimer];
     self.myLabelOne.text = @" ";
     self.myLabelTwo.text = @" ";
     self.myLabelThree.text = @" ";
