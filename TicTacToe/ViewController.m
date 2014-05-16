@@ -23,7 +23,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
 
 @property CGPoint pointOfPanSaved;
-@property CGPoint pointofLabelOrigin;
+
 @property CGAffineTransform originPoint;
 
 @property BOOL turn;
@@ -49,8 +49,6 @@
     //Saves the center for the label
     self.originPoint = self.whichPlayerLabel.transform;
 
-    self.pointofLabelOrigin = self.whichPlayerLabel.frame.origin;
-
     self.helpButton = YES;
     [self createTimer];
     self.currentSeconds = 15;
@@ -60,7 +58,7 @@
 {
     if (CGRectContainsPoint(_myLabelOne.frame, pointNew)) {
         self.clickedLabel = self.myLabelOne;
-
+        
     } else if (CGRectContainsPoint(self.myLabelTwo.frame, pointNew)) {
         self.clickedLabel = self.myLabelTwo;
 
@@ -207,13 +205,9 @@
 
 - (IBAction)onHelpButtonPressed:(UIButton *)sender
 {
-    if (self.helpButton) {
-        self.gameRules.text = @"Rules:\n 1. The first player is assigned X's and places an X on a square her choosing.\n 2. The second player is assigned O's and places an O on any of the remaining squares. \n 3. The two players take turns placing X's and O's on the board. \n 4. The first player to get three X's or O's in a row is the winner.\n 5. If all  squares of the board are filled with no player getting    three in row, the game ends in a draw";
-        self.helpButton = !self.helpButton;
-    } else {
-        self.gameRules.text = @"";
-        self.helpButton = !self.helpButton;
-    }
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"How To Play" message:@"You don't know how to play tictactoe?" delegate:nil cancelButtonTitle:@"Yes" otherButtonTitles:@"No"   , nil ];
+
+    [alert show];
 }
 - (IBAction)restartButton:(id)sender {
     [self reset];
@@ -222,7 +216,7 @@
 -(void)reset
 {
 
-    self.pointOfPanSaved = self.pointofLabelOrigin;
+    self.clickedLabel = nil;
 
     [self.timer invalidate];
     self.currentSeconds = 16;
