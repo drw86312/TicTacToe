@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *myLabelOne;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelTwo;
@@ -22,8 +22,18 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
 @property CGPoint point;
+@property CGAffineTransform transform;
 @property BOOL turn;
 @property (weak, nonatomic) IBOutlet UILabel *clickedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *gameRules;
+@property BOOL helpButton;
+
+
+@property (weak, nonatomic) IBOutlet UILabel *timerLabel;
+@property (strong, nonatomic) NSTimer *timer;
+@property int currentSeconds;
+
+
 
 @end
 
@@ -33,7 +43,10 @@
 {
     [super viewDidLoad];
     self.turn = NO;
-
+    self.transform = self.whichPlayerLabel.transform;
+    self.helpButton = YES;
+    [self createTimer];
+    self.currentSeconds = 15;
 }
 
 -(void)findLabelUsingPoint:(CGPoint) pointNew
@@ -68,34 +81,47 @@
 }
 
 -(void)xIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"X won" message:@"X won" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"X won" message:@"X won" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
     [alert show];
+    [self.timer invalidate];
 }
 
 -(void)oIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"O won" message:@"O won" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"O won" message:@"O won" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil ];
     [alert show];
+    [self.timer invalidate];
 }
 
--(IBAction)onLabelTapped:(UITapGestureRecognizer *) tap
+-(IBAction)onLabelPan:(UIPanGestureRecognizer *) pan
 {
+    self.point = [pan translationInView:self.view];
+    self.whichPlayerLabel.transform = CGAffineTransformMakeTranslation(_point.x, _point.y);
+    _point.x += (self.whichPlayerLabel.center.x);
+    _point.y += (self.whichPlayerLabel.center.y);
+    if (pan.state == UIGestureRecognizerStateEnded) {
+        [self findLabelUsingPoint:self.point];
+        [UIView animateWithDuration:1.5 animations:^{
+            self.whichPlayerLabel.transform = self.transform;
+            }];
+        [self.timer invalidate];
+        self.currentSeconds = 16;
+        [self createTimer];
 
-    NSString *string = @" ";
-
-    self.point = [tap locationInView:self.view];
-
-    [self findLabelUsingPoint:self.point];
+    }
     // if BOOL = YES for Turn, set in viewDidLoad
     if (self.turn) {
-        if (CGRectContainsPoint(self.clickedLabel.frame, self.point) && [self.clickedLabel.text isEqual: @" "]) {
+        if ([self.clickedLabel.text isEqual: @" "]) {
             self.clickedLabel.text = @"O";
             self.clickedLabel.textColor = [UIColor redColor];
             self.turn = !self.turn;
             self.whichPlayerLabel.text = @"X";
             }
+
+//CGRectContainsPoint(self.clickedLabel.frame, self.point) && 
+
 // Else other turn
     } else {
-            if (CGRectContainsPoint(self.clickedLabel.frame, self.point) && [self.clickedLabel.text isEqual: @" "]) {
+            if ([self.clickedLabel.text isEqual: @" "]) {
                 self.clickedLabel.text = @"X";
                 self.clickedLabel.textColor = [UIColor blueColor];
                 self.turn = !self.turn;
@@ -144,13 +170,94 @@
     } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
         [self oIsWinner];
     }
-    else if (self.myLabelOne.text != string && self.myLabelTwo.text != string && self.myLabelThree.text != string && self.myLabelFour.text != string && self.myLabelFive.text != string && self.myLabelSix.text != string && self.myLabelSeven.text != string && self.myLabelEight.text != string && self.myLabelNine.text != string)
-    {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"cat" message:nil delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil];
-        [alert show];
-    }
-//    NSLog(@"%f %f", point.x, point.y);
 
+    // If all nine lables are filled and no one has won, call the "Cat Game" alertview.
+    else if (([self.myLabelOne.text isEqualToString:@"X"] || [self.myLabelOne.text isEqualToString:@"O"]) &&
+             ([self.myLabelTwo.text isEqualToString:@"X"] || [self.myLabelTwo.text isEqualToString:@"O"]) &&
+             ([self.myLabelThree.text isEqualToString:@"X"] || [self.myLabelThree.text isEqualToString:@"O"]) &&
+             ([self.myLabelFour.text isEqualToString:@"X"] || [self.myLabelFour.text isEqualToString:@"O"]) &&
+             ([self.myLabelFive.text isEqualToString:@"X"] || [self.myLabelFive.text isEqualToString:@"O"]) &&
+             ([self.myLabelSix.text isEqualToString:@"X"] || [self.myLabelSix.text isEqualToString:@"O"]) &&
+             ([self.myLabelSeven.text isEqualToString:@"X"] || [self.myLabelSeven.text isEqualToString:@"O"]) &&
+             ([self.myLabelEight.text isEqualToString:@"X"] || [self.myLabelEight.text isEqualToString:@"O"]) &&
+             ([self.myLabelNine.text isEqualToString:@"X"] || [self.myLabelNine.text isEqualToString:@"O"]))
+    {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Cat!" message:@"It's a Draw" delegate:(self) cancelButtonTitle:@"Play Again" otherButtonTitles:nil];
+        [alert show];
+        [self.timer invalidate];
+    }
+
+}
+
+- (IBAction)onHelpButtonPressed:(UIButton *)sender
+{
+    if (self.helpButton) {
+        self.gameRules.text = @"Rules:\n 1. The first player is assigned X's and places an X on a square her choosing.\n 2. The second player is assigned O's and places an O on any of the remaining squares. \n 3. The two players take turns placing X's and O's on the board. \n 4. The first player to get three X's or O's in a row is the winner.\n 5. If all  squares of the board are filled with no player getting    three in row, the game ends in a draw";
+        self.helpButton = !self.helpButton;
+    } else {
+        self.gameRules.text = @"";
+        self.helpButton = !self.helpButton;
+    }
+}
+- (IBAction)resumeGame:(id)sender {
+    [self reset];
+    [self.timer invalidate];
+    self.currentSeconds = 16;
+    [self createTimer];
+}
+
+
+-(void)reset
+{
+    self.myLabelOne.text = @" ";
+    self.myLabelTwo.text = @" ";
+    self.myLabelThree.text = @" ";
+    self.myLabelFour.text = @" ";
+    self.myLabelFive.text = @" ";
+    self.myLabelSix.text = @" ";
+    self.myLabelSeven.text = @" ";
+    self.myLabelEight.text = @" ";
+    self.myLabelNine.text = @" ";
+
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        [self reset];
+    }
+}
+
+
+-(void)createTimer
+{
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(onTick:) userInfo:nil repeats:YES];
+}
+
+-(void)onTick:(NSTimer *)timer
+{
+    if (self.currentSeconds > 0) {
+        self.currentSeconds -= 1;
+        self.timerLabel.text = [NSString stringWithFormat:@"%d", self.currentSeconds];
+    } else {
+        self.timerLabel.text = @"X";
+        self.timerLabel.textColor = [UIColor redColor];
+        self.turn = !self.turn;
+            if ([self.whichPlayerLabel.text isEqualToString:@"X"]) {
+            self.whichPlayerLabel.text = @"O";
+            [timer invalidate];
+            self.currentSeconds = 16;
+            [self createTimer];
+            self.timerLabel.textColor = [UIColor colorWithRed:221.0 green:221.0 blue:221.0 alpha:1];
+            }
+            else {
+                self.whichPlayerLabel.text = @"X";
+                [timer invalidate];
+                self.currentSeconds = 16;
+                [self createTimer];
+                self.timerLabel.textColor = [UIColor colorWithRed:221.0 green:221.0 blue:221.0 alpha:1];
+            }
+    }
 
 
 }
