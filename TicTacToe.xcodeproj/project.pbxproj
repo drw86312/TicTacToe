@@ -21,6 +21,7 @@
 		0E5D8C0E1925406600867A8C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E5D8BF01925406600867A8C /* UIKit.framework */; };
 		0E5D8C161925406600867A8C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E5D8C141925406600867A8C /* InfoPlist.strings */; };
 		0E5D8C181925406600867A8C /* TicTacToeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5D8C171925406600867A8C /* TicTacToeTests.m */; };
+		0E95581E1926A28600808D2B /* HelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E95581D1926A28600808D2B /* HelpViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,8 @@
 		0E5D8C131925406600867A8C /* TicTacToeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TicTacToeTests-Info.plist"; sourceTree = "<group>"; };
 		0E5D8C151925406600867A8C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E5D8C171925406600867A8C /* TicTacToeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TicTacToeTests.m; sourceTree = "<group>"; };
+		0E95581C1926A28600808D2B /* HelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelpViewController.h; sourceTree = "<group>"; };
+		0E95581D1926A28600808D2B /* HelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelpViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +118,8 @@
 				0E5D8BFB1925406600867A8C /* AppDelegate.h */,
 				0E5D8BFC1925406600867A8C /* AppDelegate.m */,
 				0E5D8BFE1925406600867A8C /* Main.storyboard */,
+				0E95581C1926A28600808D2B /* HelpViewController.h */,
+				0E95581D1926A28600808D2B /* HelpViewController.m */,
 				0E5D8C011925406600867A8C /* ViewController.h */,
 				0E5D8C021925406600867A8C /* ViewController.m */,
 				0E5D8C041925406600867A8C /* Images.xcassets */,
@@ -252,6 +257,7 @@
 				0E5D8C031925406600867A8C /* ViewController.m in Sources */,
 				0E5D8BFD1925406600867A8C /* AppDelegate.m in Sources */,
 				0E5D8BF91925406600867A8C /* main.m in Sources */,
+				0E95581E1926A28600808D2B /* HelpViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +462,7 @@
 				0E5D8C1D1925406600867A8C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0E5D8C1E1925406600867A8C /* Build configuration list for PBXNativeTarget "TicTacToeTests" */ = {
 			isa = XCConfigurationList;
@@ -464,6 +471,7 @@
 				0E5D8C201925406600867A8C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

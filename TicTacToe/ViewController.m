@@ -7,9 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "HelpViewController.h"
 
 @interface ViewController () <UIAlertViewDelegate>
 
+// Label properties - these outlet to Tic Tac Toe squares
 @property (weak, nonatomic) IBOutlet UILabel *myLabelOne;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelTwo;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelThree;
@@ -20,24 +22,29 @@
 @property (weak, nonatomic) IBOutlet UILabel *myLabelEight;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelNine;
 
+// Label displaying which player's turn it is.
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
 
-@property CGPoint pointOfPanSaved;
-
-@property CGAffineTransform originPoint;
-
-@property BOOL turn;
-
-@property (weak, nonatomic) IBOutlet UILabel *clickedLabel;
-@property (weak, nonatomic) IBOutlet UILabel *gameRules;
-
-@property BOOL helpButton;
-
+// Properties necessary to create a NSTimer and set a timer label.
 @property (weak, nonatomic) IBOutlet UILabel *timerLabel;
 @property (strong, nonatomic) NSTimer *timer;
 @property int currentSeconds;
 
+// Boolean value indicating which player's turn it is.
+@property BOOL turn;
+// Indicates whether the helpButton has been pressed.
+@property BOOL helpButton;
+
+// Properties that help interpret gesture behavior.
+@property CGPoint pointOfPanSaved;
+@property CGAffineTransform originPoint;
+
+// Other properties
+@property (weak, nonatomic) IBOutlet UILabel *clickedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *gameRules;
+
 @end
+
 
 @implementation ViewController
 
@@ -50,10 +57,12 @@
     self.originPoint = self.whichPlayerLabel.transform;
 
     self.helpButton = YES;
-    [self createTimer];
+
     self.currentSeconds = 15;
+    [self createTimer];
 }
 
+// Finds the correct label using the CGPoint returned by the gesture variable, pan, and sets the clickedLabel property to the label selected.
 -(void)findLabelUsingPoint:(CGPoint) pointNew
 {
     if (CGRectContainsPoint(_myLabelOne.frame, pointNew)) {
@@ -85,17 +94,7 @@
     }
 }
 
--(void)xIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"X won" message:@"X won" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
-    [alert show];
-    [self.timer invalidate];
-}
-
--(void)oIsWinner {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"O won" message:@"O won" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
-    [alert show];
-    [self.timer invalidate];
-}
+#pragma mark IBActions
 
 -(IBAction)onLabelPan:(UIPanGestureRecognizer *) pan
 {
@@ -108,7 +107,7 @@
     _pointOfPanSaved.x += (self.whichPlayerLabel.center.x);
     _pointOfPanSaved.y += (self.whichPlayerLabel.center.y);
 
-    //Finding area where 
+    //When pan gesture has ended, call the findLabel method, snap the whichPlayerLabel to origin, and restrart the timer.
     if (pan.state == UIGestureRecognizerStateEnded) {
 
         [self findLabelUsingPoint:self.pointOfPanSaved];
@@ -117,10 +116,7 @@
         [UIView animateWithDuration:1.5 animations:^{
             self.whichPlayerLabel.transform = self.originPoint;
             }];
-
-        [self.timer invalidate];
-        self.currentSeconds = 16;
-        [self createTimer];
+        [self restartTimer];
 
     }//end if
 
@@ -143,8 +139,6 @@
                 }
             }
 
-
-
 //Checking if User Won
 
     if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelTwo.text isEqual: @"X"] && [self.myLabelThree.text  isEqual: @"X"]) {
@@ -157,7 +151,7 @@
         [self xIsWinner];
     } else if ([self.myLabelTwo.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelEight.text  isEqual: @"X"]) {
         [self xIsWinner];
-    }else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelSix.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+    } else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelSix.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
         [self xIsWinner];
     } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
         [self xIsWinner];
@@ -167,7 +161,7 @@
 
     // if O scores
 
-    else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelTwo.text isEqual: @"O"] && [self.myLabelThree.text  isEqual: @"O"]) {
+      else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelTwo.text isEqual: @"O"] && [self.myLabelThree.text  isEqual: @"O"]) {
         [self oIsWinner];
     } else if ([self.myLabelFour.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSix.text  isEqual: @"O"]) {
         [self oIsWinner];
@@ -177,7 +171,7 @@
         [self oIsWinner];
     } else if ([self.myLabelTwo.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelEight.text  isEqual: @"O"]) {
         [self oIsWinner];
-    }else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelSix.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+    } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelSix.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
         [self oIsWinner];
     } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
         [self oIsWinner];
@@ -186,41 +180,66 @@
     }
 
     // If all nine lables are filled and no one has won, call the "Cat Game" alertview.
-    else if (([self.myLabelOne.text isEqualToString:@"X"] || [self.myLabelOne.text isEqualToString:@"O"]) &&
-             ([self.myLabelTwo.text isEqualToString:@"X"] || [self.myLabelTwo.text isEqualToString:@"O"]) &&
-             ([self.myLabelThree.text isEqualToString:@"X"] || [self.myLabelThree.text isEqualToString:@"O"]) &&
-             ([self.myLabelFour.text isEqualToString:@"X"] || [self.myLabelFour.text isEqualToString:@"O"]) &&
-             ([self.myLabelFive.text isEqualToString:@"X"] || [self.myLabelFive.text isEqualToString:@"O"]) &&
-             ([self.myLabelSix.text isEqualToString:@"X"] || [self.myLabelSix.text isEqualToString:@"O"]) &&
-             ([self.myLabelSeven.text isEqualToString:@"X"] || [self.myLabelSeven.text isEqualToString:@"O"]) &&
-             ([self.myLabelEight.text isEqualToString:@"X"] || [self.myLabelEight.text isEqualToString:@"O"]) &&
-             ([self.myLabelNine.text isEqualToString:@"X"] || [self.myLabelNine.text isEqualToString:@"O"]))
+    else if (([self.myLabelOne.text isEqualToString:@"X"]    || [self.myLabelOne.text isEqualToString:@"O"])   &&
+             ([self.myLabelTwo.text isEqualToString:@"X"]    || [self.myLabelTwo.text isEqualToString:@"O"])   &&
+             ([self.myLabelThree.text isEqualToString:@"X"]  || [self.myLabelThree.text isEqualToString:@"O"]) &&
+             ([self.myLabelFour.text isEqualToString:@"X"]   || [self.myLabelFour.text isEqualToString:@"O"])  &&
+             ([self.myLabelFive.text isEqualToString:@"X"]   || [self.myLabelFive.text isEqualToString:@"O"])  &&
+             ([self.myLabelSix.text isEqualToString:@"X"]    || [self.myLabelSix.text isEqualToString:@"O"])   &&
+             ([self.myLabelSeven.text isEqualToString:@"X"]  || [self.myLabelSeven.text isEqualToString:@"O"]) &&
+             ([self.myLabelEight.text isEqualToString:@"X"]  || [self.myLabelEight.text isEqualToString:@"O"]) &&
+             ([self.myLabelNine.text isEqualToString:@"X"]   || [self.myLabelNine.text isEqualToString:@"O"]))
     {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Cat!" message:@"It's a Draw" delegate:(self) cancelButtonTitle:@"Play Again" otherButtonTitles:nil];
-        [alert show];
-        [self.timer invalidate];
+        [self catGame];
     }
-
 }
 
+// Sets and shows an alertview when pressed, allowing  users to see the rules of Tic Tac Toe.
 - (IBAction)onHelpButtonPressed:(UIButton *)sender
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"How To Play" message:@"You don't know how to play tictactoe?" delegate:nil cancelButtonTitle:@"Yes" otherButtonTitles:@"No"   , nil ];
+    [self performSegueWithIdentifier:@"toHelpViewController" sender:self ];
 
-    [alert show];
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"How To Play" message:@"You don't know how to play tictactoe?" delegate:nil cancelButtonTitle:@"Yes" otherButtonTitles:@"No", nil];
+//    [alert show];
 }
+
+// Resets the game when pressed. See reset helper method.
 - (IBAction)restartButton:(id)sender {
     [self reset];
 }
 
+#pragma  mark Game finished methods
+
+-(void)xIsWinner {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Congratulations X" message:@"You Won!" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
+    [alert show];
+    [self.timer invalidate];
+}
+
+-(void)oIsWinner {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Congratulations O" message:@"You Won!" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
+    [alert show];
+    [self.timer invalidate];
+}
+
+-(void)catGame {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Cat!" message:@"It's a Draw" delegate:(self) cancelButtonTitle:@"Play Again" otherButtonTitles:nil];
+    [alert show];
+    [self.timer invalidate];
+}
+
+
+#pragma mark - Helper methods
+
+// This method resets the board, restarts the timer, and sets the clicked label to nil.
 -(void)reset
 {
-
     self.clickedLabel = nil;
 
-    [self.timer invalidate];
-    self.currentSeconds = 16;
-    [self createTimer];
+    // Stops the timer and restarts the timer.
+    [self restartTimer];
+
+    // Resets the tic tac toe square labels to an empty space.
     self.myLabelOne.text = @" ";
     self.myLabelTwo.text = @" ";
     self.myLabelThree.text = @" ";
@@ -230,9 +249,9 @@
     self.myLabelSeven.text = @" ";
     self.myLabelEight.text = @" ";
     self.myLabelNine.text = @" ";
-
 }
 
+// A delegate method of UIAlertView that allows the game board to be reset when the alertview button is pressed.
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 0) {
@@ -240,44 +259,41 @@
     }
 }
 
-
+// Creates an instance of an NSTimer, sending a message to selector onTick every second.
 -(void)createTimer
 {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(onTick:) userInfo:nil repeats:YES];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(onSecondTicked:) userInfo:nil repeats:YES];
 }
 
--(void)onTick:(NSTimer *)timer
+// Stops then restarts the timer.
+-(void)restartTimer
 {
-    if (self.currentSeconds > 0) {
+    [self.timer invalidate];
+    self.currentSeconds = 16;
+    [self createTimer];
+}
+
+// Logic that sets the timerLabel and switches between players when time expires.
+-(void)onSecondTicked:(NSTimer *)timer
+{
+    // currentSeconds property set to 16 in viewDidLoad method. If the value of currentSeconds is greater than 1, assign the value of currentSeconds to the timerLabel. Otherwise, switch turn to other player, switch whichPlayerLabel to other player, and restart timer.
+    if (self.currentSeconds > 0)
+    {
         self.currentSeconds -= 1;
         self.timerLabel.text = [NSString stringWithFormat:@"%d", self.currentSeconds];
-    } else {
+    }
+    else {
         self.timerLabel.text = @"X";
-        self.timerLabel.textColor = [UIColor redColor];
         self.turn = !self.turn;
             if ([self.whichPlayerLabel.text isEqualToString:@"X"]) {
-            self.whichPlayerLabel.text = @"O";
-            [timer invalidate];
-            self.currentSeconds = 16;
-            [self createTimer];
-            self.timerLabel.textColor = [UIColor colorWithRed:221.0 green:221.0 blue:221.0 alpha:1];
+                self.whichPlayerLabel.text = @"O";
+                [self restartTimer];
             }
             else {
                 self.whichPlayerLabel.text = @"X";
-                [timer invalidate];
-                self.currentSeconds = 16;
-                [self createTimer];
-                self.timerLabel.textColor = [UIColor colorWithRed:221.0 green:221.0 blue:221.0 alpha:1];
+                [self restartTimer];
+                 }
             }
-    }
-
-
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end
