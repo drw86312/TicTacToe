@@ -21,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *myLabelSeven;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelEight;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelNine;
+@property (weak, nonatomic) IBOutlet UIButton *switchPlayerComputerButtonText;
 
 // Label displaying which player's turn it is.
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
@@ -32,8 +33,6 @@
 
 // Boolean value indicating which player's turn it is.
 @property BOOL turn;
-// Indicates whether the helpButton has been pressed.
-@property BOOL helpButton;
 
 // Properties that help interpret gesture behavior.
 @property CGPoint pointOfPanSaved;
@@ -41,7 +40,15 @@
 
 // Other properties
 @property (weak, nonatomic) IBOutlet UILabel *clickedLabel;
-@property (weak, nonatomic) IBOutlet UILabel *gameRules;
+
+// Properties necessary to play the computer
+@property (strong, nonatomic) NSArray *myLabelsArray;
+@property (strong, nonatomic) UILabel *computerLabel;
+
+@property BOOL playingWithHuman;
+@property (strong, nonatomic) NSString *labeltext;
+
+
 
 @end
 
@@ -52,14 +59,20 @@
 {
     [super viewDidLoad];
     self.turn = NO;
+    // Sets default setting to - not playing with the computer
+    self.playingWithHuman = YES;
 
     //Saves the center for the label
     self.originPoint = self.whichPlayerLabel.transform;
 
-    self.helpButton = YES;
-
     self.currentSeconds = 15;
     [self createTimer];
+
+    self.switchPlayerComputerButtonText.titleLabel.text = @"Play With Computer";
+
+    // Puts the labels of the tic tac toe objects in an array.
+
+    self.myLabelsArray = [[NSArray alloc] initWithObjects:self.myLabelOne, self.myLabelTwo, self.myLabelThree, self.myLabelFour, self.myLabelFive, self.myLabelSix, self.myLabelSeven, self.myLabelEight, self.myLabelNine, nil];
 }
 
 // Finds the correct label using the CGPoint returned by the gesture variable, pan, and sets the clickedLabel property to the label selected.
@@ -77,120 +90,160 @@
     } else if (CGRectContainsPoint(self.myLabelFour.frame, pointNew)) {
         self.clickedLabel = self.myLabelFour;
 
-    }else if (CGRectContainsPoint(self.myLabelFive.frame, pointNew)) {
+    } else if (CGRectContainsPoint(self.myLabelFive.frame, pointNew)) {
         self.clickedLabel = self.myLabelFive;
 
-    }else if (CGRectContainsPoint(self.myLabelSix.frame, pointNew)) {
+    } else if (CGRectContainsPoint(self.myLabelSix.frame, pointNew)) {
         self.clickedLabel = self.myLabelSix;
 
-    }else if (CGRectContainsPoint(self.myLabelSeven.frame, pointNew)) {
+    } else if (CGRectContainsPoint(self.myLabelSeven.frame, pointNew)) {
         self.clickedLabel = self.myLabelSeven;
 
-    }else if (CGRectContainsPoint(self.myLabelEight.frame, pointNew)) {
+    } else if (CGRectContainsPoint(self.myLabelEight.frame, pointNew)) {
         self.clickedLabel = self.myLabelEight;
 
-    }else if (CGRectContainsPoint(self.myLabelNine.frame, pointNew)) {
+    } else if (CGRectContainsPoint(self.myLabelNine.frame, pointNew)) {
+        self.clickedLabel = self.myLabelNine;
+    }
+}
+
+-(void)findLabelFromComputer
+{
+    if (self.computerLabel == self.myLabelOne) {
+        self.clickedLabel = self.myLabelOne;
+    }
+    else if (self.computerLabel == self.myLabelTwo) {
+        self.clickedLabel = self.myLabelTwo;
+    }
+    else if (self.computerLabel == self.myLabelThree) {
+        self.clickedLabel = self.myLabelThree;
+    }
+    else if (self.computerLabel == self.myLabelFour) {
+        self.clickedLabel = self.myLabelFour;
+    }
+    else if (self.computerLabel == self.myLabelFive) {
+            self.clickedLabel = self.myLabelFive;
+    }
+    else if (self.computerLabel == self.myLabelSix) {
+            self.clickedLabel = self.myLabelSix;
+    }
+    else if (self.computerLabel == self.myLabelSeven) {
+        self.clickedLabel = self.myLabelSeven;
+    }
+    else if (self.computerLabel == self.myLabelEight) {
+        self.clickedLabel = self.myLabelEight;
+    }
+    else if (self.computerLabel == self.myLabelNine) {
         self.clickedLabel = self.myLabelNine;
     }
 }
 
 #pragma mark IBActions
 
--(IBAction)onLabelPan:(UIPanGestureRecognizer *) pan
+
+// This gesture behavior executes when the user is playing with another player
+-(IBAction)onLabelPan: (UIPanGestureRecognizer *) pan
 {
-    //Setting @Property for pan point
-    self.pointOfPanSaved = [pan translationInView:self.view];
+    if (self.playingWithHuman == YES)
+    {
+        //Setting @Property for pan point
+        self.pointOfPanSaved = [pan translationInView:self.view];
     
-    self.whichPlayerLabel.transform = CGAffineTransformMakeTranslation(_pointOfPanSaved.x, _pointOfPanSaved.y);
+        self.whichPlayerLabel.transform = CGAffineTransformMakeTranslation(_pointOfPanSaved.x, _pointOfPanSaved.y);
 
-    //Offsetting for center of label with finger point
-    _pointOfPanSaved.x += (self.whichPlayerLabel.center.x);
-    _pointOfPanSaved.y += (self.whichPlayerLabel.center.y);
+        //Offsetting for center of label with finger point
+        _pointOfPanSaved.x += (self.whichPlayerLabel.center.x);
+        _pointOfPanSaved.y += (self.whichPlayerLabel.center.y);
 
-    //When pan gesture has ended, call the findLabel method, snap the whichPlayerLabel to origin, and restrart the timer.
-    if (pan.state == UIGestureRecognizerStateEnded) {
+        //When pan gesture has ended, call the findLabel method, snap the whichPlayerLabel to origin, and restrart the timer.
+        if (pan.state == UIGestureRecognizerStateEnded)
+            {
+            [self findLabelUsingPoint:self.pointOfPanSaved];
 
-        [self findLabelUsingPoint:self.pointOfPanSaved];
-
-        //Setting the Label back to the origin animatedly.
-        [UIView animateWithDuration:1.5 animations:^{
+            //Setting the Label back to the origin animatedly.
+            [UIView animateWithDuration:1.5 animations:^{
             self.whichPlayerLabel.transform = self.originPoint;
-            }];
-        [self restartTimer];
+                }];
+            [self restartTimer];
 
-    }//end if
 
-    // if BOOL = YES for Turn, set in viewDidLoad
-    if (self.turn) {
-        if ([self.clickedLabel.text isEqual: @" "]) {
-            self.clickedLabel.text = @"O";
-            self.clickedLabel.textColor = [UIColor redColor];
-            self.turn = !self.turn;
-            self.whichPlayerLabel.text = @"X";
+            // if BOOL = YES for Turn, set in viewDidLoad
+            if (self.turn)
+            {
+                if ([self.clickedLabel.text isEqual: @" "])
+                {
+                        self.clickedLabel.text = @"O";
+                        self.clickedLabel.textColor = [UIColor redColor];
+                        self.turn = !self.turn;
+                        self.whichPlayerLabel.text = @"X";
+                }
             }
-
-// Else other turn
-    } else {
-            if ([self.clickedLabel.text isEqual: @" "]) {
+            // Else other turn
+            else
+            {
+            if ([self.clickedLabel.text isEqual: @" "])
+                {
                 self.clickedLabel.text = @"X";
                 self.clickedLabel.textColor = [UIColor blueColor];
                 self.turn = !self.turn;
                 self.whichPlayerLabel.text = @"O";
                 }
             }
+        }
 
-//Checking if User Won
+            //Checking if player X won
 
-    if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelTwo.text isEqual: @"X"] && [self.myLabelThree.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelFour.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelSix.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelSeven.text isEqual: @"X"] && [self.myLabelEight.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFour.text isEqual: @"X"] && [self.myLabelSeven.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelTwo.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelEight.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelSix.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
-        [self xIsWinner];
-    } else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelSeven.text  isEqual: @"X"]) {
-        [self xIsWinner];
+            [self checkXWins];
+
+            // Checking if O player wins
+
+            [self checkOWins];
+
+            // Checking if the game is a cat
+            [self checkifCat];
     }
 
-    // if O scores
-
-      else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelTwo.text isEqual: @"O"] && [self.myLabelThree.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelFour.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSix.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelSeven.text isEqual: @"O"] && [self.myLabelEight.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFour.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelTwo.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelEight.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelSix.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
-        [self oIsWinner];
-    }
-
-    // If all nine lables are filled and no one has won, call the "Cat Game" alertview.
-    else if (([self.myLabelOne.text isEqualToString:@"X"]    || [self.myLabelOne.text isEqualToString:@"O"])   &&
-             ([self.myLabelTwo.text isEqualToString:@"X"]    || [self.myLabelTwo.text isEqualToString:@"O"])   &&
-             ([self.myLabelThree.text isEqualToString:@"X"]  || [self.myLabelThree.text isEqualToString:@"O"]) &&
-             ([self.myLabelFour.text isEqualToString:@"X"]   || [self.myLabelFour.text isEqualToString:@"O"])  &&
-             ([self.myLabelFive.text isEqualToString:@"X"]   || [self.myLabelFive.text isEqualToString:@"O"])  &&
-             ([self.myLabelSix.text isEqualToString:@"X"]    || [self.myLabelSix.text isEqualToString:@"O"])   &&
-             ([self.myLabelSeven.text isEqualToString:@"X"]  || [self.myLabelSeven.text isEqualToString:@"O"]) &&
-             ([self.myLabelEight.text isEqualToString:@"X"]  || [self.myLabelEight.text isEqualToString:@"O"]) &&
-             ([self.myLabelNine.text isEqualToString:@"X"]   || [self.myLabelNine.text isEqualToString:@"O"]))
+    else //Playing computer
     {
-        [self catGame];
+        //Setting @Property for pan point
+        self.pointOfPanSaved = [pan translationInView:self.view];
+
+        self.whichPlayerLabel.transform = CGAffineTransformMakeTranslation(_pointOfPanSaved.x, _pointOfPanSaved.y);
+
+        //Offsetting for center of label with finger point
+        _pointOfPanSaved.x += (self.whichPlayerLabel.center.x);
+        _pointOfPanSaved.y += (self.whichPlayerLabel.center.y);
+        //When pan gesture has ended, call the findLabel method, snap the whichPlayerLabel to origin, and restrart the timer.
+        if (pan.state == UIGestureRecognizerStateEnded)
+            {
+                [self findLabelUsingPoint:self.pointOfPanSaved];
+
+                //Setting the Label back to the origin animatedly.
+                [UIView animateWithDuration:1.5 animations:^{
+                self.whichPlayerLabel.transform = self.originPoint;
+                    }];
+                [self restartTimer];
+
+            if ([self.clickedLabel.text isEqual: @" "])
+            {
+                self.clickedLabel.text = @"X";
+                self.clickedLabel.textColor = [UIColor blueColor];
+                self.whichPlayerLabel.text = @"O";
+            }
+
+
+        //Checking if player X won
+
+        [self checkXWins];
+
+        // Checking if O player wins
+
+        [self checkOWins];
+
+        // Checking if the game is a cat
+        
+        [self generateAndSetComputerLabel];
+        }
     }
 }
 
@@ -204,6 +257,44 @@
 - (IBAction)restartButton:(id)sender {
     [self reset];
 }
+- (IBAction)onPlayingWithPartnerButtonPressed:(id)sender
+{
+    self.playingWithHuman = YES;
+    [self reset];
+    self.whichPlayerLabel.text = @"X";
+
+}
+- (IBAction)onPlayComputerButtonPressed:(id)sender {
+    self.playingWithHuman = NO;
+    [self reset];
+    self.whichPlayerLabel.text = @"X";
+}
+
+-(void)generateAndSetComputerLabel
+{
+        // Returns a random number between 0 and 8.
+        int x = arc4random() % 9;
+
+        self.clickedLabel = [self.myLabelsArray objectAtIndex:x];
+
+        while ([self.clickedLabel.text  isEqual: @"X"] || [self.clickedLabel.text  isEqual: @"O"]) {
+            int x = arc4random() % 9;
+
+            self.clickedLabel = [self.myLabelsArray objectAtIndex:x];
+        }
+
+        self.clickedLabel.text = @"O";
+        self.clickedLabel.textColor = [UIColor redColor];
+        self.whichPlayerLabel.text = @"X";
+
+    // Checking if O player wins
+
+    [self checkOWins];
+
+    // Checking if the game is a cat
+    [self checkifCat];
+}
+
 
 #pragma  mark Game finished methods
 
@@ -228,7 +319,67 @@
 
 #pragma mark - Helper methods
 
-// This method resets the board, restarts the timer, and sets the clicked label to nil.
+// This method checks if the X player has won.
+-(void)checkXWins
+{
+    if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelTwo.text isEqual: @"X"] && [self.myLabelThree.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelFour.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelSix.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelSeven.text isEqual: @"X"] && [self.myLabelEight.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFour.text isEqual: @"X"] && [self.myLabelSeven.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelTwo.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelEight.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelSix.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelNine.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    } else if ([self.myLabelThree.text isEqual: @"X"] && [self.myLabelFive.text isEqual: @"X"] && [self.myLabelSeven.text  isEqual: @"X"]) {
+        [self xIsWinner];
+    }
+}
+
+// This method checks if the O player has won.
+-(void)checkOWins
+{
+    if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelTwo.text isEqual: @"O"] && [self.myLabelThree.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelFour.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSix.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelSeven.text isEqual: @"O"] && [self.myLabelEight.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFour.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelTwo.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelEight.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelSix.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelOne.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelNine.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    } else if ([self.myLabelThree.text isEqual: @"O"] && [self.myLabelFive.text isEqual: @"O"] && [self.myLabelSeven.text  isEqual: @"O"]) {
+        [self oIsWinner];
+    }
+}
+
+// This method checks if there is a cat game.
+-(void)checkifCat
+{
+    if (([self.myLabelOne.text isEqualToString:@"X"]    || [self.myLabelOne.text isEqualToString:@"O"])   &&
+        ([self.myLabelTwo.text isEqualToString:@"X"]    || [self.myLabelTwo.text isEqualToString:@"O"])   &&
+        ([self.myLabelThree.text isEqualToString:@"X"]  || [self.myLabelThree.text isEqualToString:@"O"]) &&
+        ([self.myLabelFour.text isEqualToString:@"X"]   || [self.myLabelFour.text isEqualToString:@"O"])  &&
+        ([self.myLabelFive.text isEqualToString:@"X"]   || [self.myLabelFive.text isEqualToString:@"O"])  &&
+        ([self.myLabelSix.text isEqualToString:@"X"]    || [self.myLabelSix.text isEqualToString:@"O"])   &&
+        ([self.myLabelSeven.text isEqualToString:@"X"]  || [self.myLabelSeven.text isEqualToString:@"O"]) &&
+        ([self.myLabelEight.text isEqualToString:@"X"]  || [self.myLabelEight.text isEqualToString:@"O"]) &&
+        ([self.myLabelNine.text isEqualToString:@"X"]   || [self.myLabelNine.text isEqualToString:@"O"]))
+    {
+        [self catGame];
+    }
+}
+
 -(void)reset
 {
     self.clickedLabel = nil;
