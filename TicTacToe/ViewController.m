@@ -21,7 +21,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *myLabelSeven;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelEight;
 @property (weak, nonatomic) IBOutlet UILabel *myLabelNine;
-@property (weak, nonatomic) IBOutlet UIButton *switchPlayerComputerButtonText;
+@property (weak, nonatomic) IBOutlet UIButton *restartButtonText;
 
 // Label displaying which player's turn it is.
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
@@ -58,21 +58,24 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    // Sets player turn boolean to NO
     self.turn = NO;
+
     // Sets default setting to - not playing with the computer
     self.playingWithHuman = YES;
 
     //Saves the center for the label
     self.originPoint = self.whichPlayerLabel.transform;
 
+    // Creates the number of seconds from which the timer's onTick method will count down.
     self.currentSeconds = 15;
-    [self createTimer];
 
-    self.switchPlayerComputerButtonText.titleLabel.text = @"Play With Computer";
-
-    // Puts the labels of the tic tac toe objects in an array.
-
+    // Puts the myLabel tic tac toe square objects in an array. This array will be used to find a label at random by the computer.
     self.myLabelsArray = [[NSArray alloc] initWithObjects:self.myLabelOne, self.myLabelTwo, self.myLabelThree, self.myLabelFour, self.myLabelFive, self.myLabelSix, self.myLabelSeven, self.myLabelEight, self.myLabelNine, nil];
+
+    self.restartButtonText.titleEdgeInsets = (UIEdgeInsetsMake(0, 0, 0, 0));
+        self.restartButtonText.titleLabel.text = @"  Start";
 }
 
 // Finds the correct label using the CGPoint returned by the gesture variable, pan, and sets the clickedLabel property to the label selected.
@@ -103,37 +106,6 @@
         self.clickedLabel = self.myLabelEight;
 
     } else if (CGRectContainsPoint(self.myLabelNine.frame, pointNew)) {
-        self.clickedLabel = self.myLabelNine;
-    }
-}
-
--(void)findLabelFromComputer
-{
-    if (self.computerLabel == self.myLabelOne) {
-        self.clickedLabel = self.myLabelOne;
-    }
-    else if (self.computerLabel == self.myLabelTwo) {
-        self.clickedLabel = self.myLabelTwo;
-    }
-    else if (self.computerLabel == self.myLabelThree) {
-        self.clickedLabel = self.myLabelThree;
-    }
-    else if (self.computerLabel == self.myLabelFour) {
-        self.clickedLabel = self.myLabelFour;
-    }
-    else if (self.computerLabel == self.myLabelFive) {
-            self.clickedLabel = self.myLabelFive;
-    }
-    else if (self.computerLabel == self.myLabelSix) {
-            self.clickedLabel = self.myLabelSix;
-    }
-    else if (self.computerLabel == self.myLabelSeven) {
-        self.clickedLabel = self.myLabelSeven;
-    }
-    else if (self.computerLabel == self.myLabelEight) {
-        self.clickedLabel = self.myLabelEight;
-    }
-    else if (self.computerLabel == self.myLabelNine) {
         self.clickedLabel = self.myLabelNine;
     }
 }
@@ -247,7 +219,7 @@
     }
 }
 
-// Sets and shows an alertview when pressed, allowing  users to see the rules of Tic Tac Toe.
+// Sets and shows a modal view when pressed, allowing  users to see the rules of Tic Tac Toe.
 - (IBAction)onHelpButtonPressed:(UIButton *)sender
 {
     [self performSegueWithIdentifier:@"toHelpViewController" sender:self ];
@@ -255,8 +227,11 @@
 
 // Resets the game when pressed. See reset helper method.
 - (IBAction)restartButton:(id)sender {
+    self.restartButtonText.titleLabel.text = @"Restart";
     [self reset];
 }
+
+    // Set the boolean value indicating whether the user is playing another player or the computer to YES, resets board and timer, and changes which player label to X.
 - (IBAction)onPlayingWithPartnerButtonPressed:(id)sender
 {
     self.playingWithHuman = YES;
@@ -264,39 +239,14 @@
     self.whichPlayerLabel.text = @"X";
 
 }
+    // Sets the boolean value indicating whether the user is playing another player or the computer to NO, resets the board and timer, and sets the player turn to X.
 - (IBAction)onPlayComputerButtonPressed:(id)sender {
     self.playingWithHuman = NO;
     [self reset];
     self.whichPlayerLabel.text = @"X";
 }
 
--(void)generateAndSetComputerLabel
-{
-        // Returns a random number between 0 and 8.
-        int x = arc4random() % 9;
-
-        self.clickedLabel = [self.myLabelsArray objectAtIndex:x];
-
-        while ([self.clickedLabel.text  isEqual: @"X"] || [self.clickedLabel.text  isEqual: @"O"]) {
-            int x = arc4random() % 9;
-
-            self.clickedLabel = [self.myLabelsArray objectAtIndex:x];
-        }
-
-        self.clickedLabel.text = @"O";
-        self.clickedLabel.textColor = [UIColor redColor];
-        self.whichPlayerLabel.text = @"X";
-
-    // Checking if O player wins
-
-    [self checkOWins];
-
-    // Checking if the game is a cat
-    [self checkifCat];
-}
-
-
-#pragma  mark Game finished methods
+#pragma mark - Game finished methods
 
 -(void)xIsWinner {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Congratulations X" message:@"You Won!" delegate:self cancelButtonTitle:@"Restart" otherButtonTitles:nil, nil ];
@@ -318,6 +268,31 @@
 
 
 #pragma mark - Helper methods
+
+-(void)generateAndSetComputerLabel
+{
+    // Returns a random number between 0 and 8.
+    int x = arc4random() % 9;
+    self.clickedLabel = [self.myLabelsArray objectAtIndex:x];
+
+    // Checks if random label is empty, reruns while loop until an empty label is found.
+    while ([self.clickedLabel.text  isEqual: @"X"] || [self.clickedLabel.text  isEqual: @"O"]) {
+        int x = arc4random() % 9;
+        self.clickedLabel = [self.myLabelsArray objectAtIndex:x];
+    }
+
+    // Sets the value of the empty label text to O and switches the which player label.
+    self.clickedLabel.text = @"O";
+    self.clickedLabel.textColor = [UIColor redColor];
+    self.whichPlayerLabel.text = @"X";
+
+    // Checking if O player wins
+
+    [self checkOWins];
+
+    // Checking if the game is a cat
+    [self checkifCat];
+}
 
 // This method checks if the X player has won.
 -(void)checkXWins

@@ -18,12 +18,15 @@
 
 - (void)viewDidLoad
 {
+    //Returns a webview of the wikihow tic tac toe rules.
     [super viewDidLoad];
     NSString *urlString = @"http://www.wikihow.com/Play-Tic-Tac-Toe";
     NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     [self.helpInstructionWebsite loadRequest:request];
 }
+
+    // Dismisses the modal view.
 - (IBAction)onBackButtonPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:^{
     }];

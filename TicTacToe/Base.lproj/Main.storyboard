@@ -104,7 +104,7 @@
                                     <segue destination="X3b-FE-qdq" kind="modal" identifier="toHelpViewController" id="M41-3K-Ikn"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="agB-xz-zRb">
+                            <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="agB-xz-zRb">
                                 <rect key="frame" x="216" y="360" width="100" height="100"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="0.67843137249999996" blue="0.97254901959999995" alpha="1" colorSpace="calibratedRGB"/>
@@ -171,6 +171,7 @@
                         <outlet property="myLabelSix" destination="f8U-Qc-RB0" id="R5N-GR-YLc"/>
                         <outlet property="myLabelThree" destination="nF6-Ol-27c" id="x4T-c3-Ujf"/>
                         <outlet property="myLabelTwo" destination="ZlG-bI-3Fs" id="ek4-Bm-MyF"/>
+                        <outlet property="restartButtonText" destination="agB-xz-zRb" id="Iua-18-OS2"/>
                         <outlet property="timerLabel" destination="9yX-NZ-mnv" id="sK8-GC-lKR"/>
                         <outlet property="whichPlayerLabel" destination="HNk-70-25z" id="pOc-ey-Sq9"/>
                         <segue destination="cnK-Iv-GAX" kind="modal" identifier="catSegue" id="SGP-0J-Jz7"/>

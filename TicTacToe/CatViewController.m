@@ -22,6 +22,7 @@
 
 - (IBAction)onCatBackButtonPressed:(id)sender
 {
+    // Dismisses cat modal view.
     [self dismissViewControllerAnimated:YES completion:^{
     }];
 }
